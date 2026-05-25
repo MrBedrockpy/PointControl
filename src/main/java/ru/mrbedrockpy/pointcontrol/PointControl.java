@@ -37,7 +37,7 @@ public class PointControl {
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
-        PointManager.tick();
+        if (event.phase.equals(TickEvent.Phase.END)) PointManager.tick();
     }
 
     @SubscribeEvent

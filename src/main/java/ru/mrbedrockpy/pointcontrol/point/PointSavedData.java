@@ -35,7 +35,8 @@ public class PointSavedData extends SavedData {
         for (int i = 0; i < list.size(); i++) {
             CompoundTag p = list.getCompound(i);
             String id = p.getString("id");
-            ResourceKey<Level> level = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(p.getString("level")));
+            ResourceKey<Level> level = ResourceKey.create(Registries.DIMENSION, ResourceLocation
+                    .fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, p.getString("level")));
             Vector3f pos = new Vector3f(p.getFloat("x"), p.getFloat("y"), p.getFloat("z"));
             double radius = p.getDouble("radius");
             Point point = new Point(id, level, pos, radius);
