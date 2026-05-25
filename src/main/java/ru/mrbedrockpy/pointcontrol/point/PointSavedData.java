@@ -38,8 +38,7 @@ public class PointSavedData extends SavedData {
             ResourceKey<Level> level = ResourceKey.create(Registries.DIMENSION, ResourceLocation
                     .fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, p.getString("level")));
             Vector3f pos = new Vector3f(p.getFloat("x"), p.getFloat("y"), p.getFloat("z"));
-            double radius = p.getDouble("radius");
-            Point point = new Point(id, level, pos, radius);
+            Point point = new Point(id, level, pos, p.getInt("radius"));
             point.loadAssimilationDuration(p.getInt("assimilation-duration"));
             point.loadAssimilationAnimation(AssimilationAnimation.getByName(p.getString("assimilation-animation")));
             data.points.put(id, point);

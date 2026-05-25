@@ -10,13 +10,12 @@ import org.joml.Vector3f;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 public class ClientPoint {
 
     private final String id;
     private final ResourceKey<Level> level;
     private final Vector3f pos;
-    private final double radius;
+    private double radius;
 
     private int assimilationDuration = 30;
     private AssimilationAnimation assimilationAnimation = AssimilationAnimation.UP;
@@ -31,6 +30,13 @@ public class ClientPoint {
 
     private float animTime = 0f;
     private float alpha = 0f;
+
+    public ClientPoint(String id, ResourceKey<Level> level, Vector3f pos, double radius) {
+        this.id = id;
+        this.level = level;
+        this.pos = pos;
+        this.radius = radius;
+    }
 
     public int getColor() {
         if (this.dominator == null) return 0xFFFFFFFF;

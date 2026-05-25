@@ -64,6 +64,11 @@ public class PointHud {
         return null;
     }
 
+    public static void setRadius(String pointId, double radius) {
+        ClientPoint p = points.get(pointId);
+        if (p != null) p.setRadius(radius);
+    }
+
     public static void setAssimilationDuration(String pointId, int assimilationDuration) {
         ClientPoint p = points.get(pointId);
         if (p != null) p.setAssimilationDuration(assimilationDuration);

@@ -33,7 +33,7 @@ public class Point {
     private final String id;
     private final ResourceKey<Level> level;
     private final Vector3f position;
-    private final double radius;
+    private double radius;
     private Team owner = null;
     private Team dominator = null;
     private int assimilation = 0;
@@ -55,6 +55,19 @@ public class Point {
 
     public void loadAssimilationAnimation(AssimilationAnimation assimilationAnimation) {
         this.assimilationAnimation = assimilationAnimation;
+    }
+
+    public void resetDominator() {
+        this.dominator = null;
+        this.owner = null;
+        NetworkManager.updateDominator(this.id, "null");
+        PointSavedData.get().setDirty();
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+        NetworkManager.updateRadius(id, this.radius);
+        PointSavedData.get().setDirty();
     }
 
     public void setAssimilationDuration(int assimilationDuration) {

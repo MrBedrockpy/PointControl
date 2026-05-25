@@ -32,7 +32,21 @@ public class PointCommand extends AbstractCommand {
                                 .executes(PointCommand::remove)
                         ),
                 Commands.literal("list").executes(PointCommand::list),
+                Commands.literal("radius")
+                        .then(Commands.argument("id", STR_TYPE)
+                                .suggests((context, builder) -> SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder))
+                                .then(Commands.argument("radius", DOUBLE_TYPE)
+                                        .executes(PointCommand::radius)
+                                )
+                        ),
                 Commands.literal("assimilation")
+                        .then(Commands.literal("reset")
+                                .then(Commands.argument("id", STR_TYPE)
+                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder))
+                                        .executes(PointCommand::reset)
+                                )
+                                .then(Commands.literal("all").executes(PointCommand::resetAll))
+                        )
                         .then(Commands.literal("duration")
                                 .then(Commands.argument("id", STR_TYPE)
                                         .suggests((context, builder) -> SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder))
@@ -56,7 +70,7 @@ public class PointCommand extends AbstractCommand {
 
     private static int create(CommandContext<CommandSourceStack> ctx) {
         String id = StringArgumentType.getString(ctx, "id");
-        double radius = DoubleArgumentType.getDouble(ctx, "radius");
+        int radius = IntegerArgumentType.getInteger(ctx, "radius");
         CommandSourceStack source = ctx.getSource();
         ServerPlayer player = source.getPlayer();
         if (player == null) {
@@ -85,8 +99,42 @@ public class PointCommand extends AbstractCommand {
         return 1;
     }
 
+    private static int reset(CommandContext<CommandSourceStack> ctx) {
+        Point point = PointManager.getPoints().get(StringArgumentType.getString(ctx, "id"));
+        if (point == null) {
+            ctx.getSource().sendSystemMessage(Component.literal("Point with id not found!"));
+            return 0;
+        }
+        reset0(point);
+        return 1;
+    }
+
+    private static int resetAll(CommandContext<CommandSourceStack> ctx) {
+        PointManager.getPoints().values().forEach(PointCommand::reset0);
+        return 1;
+    }
+
+    private static void reset0(Point point) {
+        point.resetDominator();
+    }
+
+    private static int radius(CommandContext<CommandSourceStack> ctx) {
+        Point point = PointManager.getPoints().get(StringArgumentType.getString(ctx, "id"));
+        if (point == null) {
+            ctx.getSource().sendSystemMessage(Component.literal("Point with id not found!"));
+            return 0;
+        }
+        point.setRadius(DoubleArgumentType.getDouble(ctx, "radius"));
+        ctx.getSource().sendSystemMessage(Component.literal("Radius been set!"));
+        return 1;
+    }
+
     private static int assimilationDuration(CommandContext<CommandSourceStack> ctx) {
         Point point = PointManager.getPoints().get(StringArgumentType.getString(ctx, "id"));
+        if (point == null) {
+            ctx.getSource().sendSystemMessage(Component.literal("Point with id not found!"));
+            return 0;
+        }
         point.setAssimilationDuration(IntegerArgumentType.getInteger(ctx, "duration"));
         ctx.getSource().sendSystemMessage(Component.literal("Assimilation duration been set!"));
         return 1;
@@ -94,6 +142,10 @@ public class PointCommand extends AbstractCommand {
 
     private static int assimilationAnimation(CommandContext<CommandSourceStack> ctx) {
         Point point = PointManager.getPoints().get(StringArgumentType.getString(ctx, "id"));
+        if (point == null) {
+            ctx.getSource().sendSystemMessage(Component.literal("Point with id not found!"));
+            return 0;
+        }
         String animationName = StringArgumentType.getString(ctx, "animation");
         AssimilationAnimation animation = AssimilationAnimation.getByName(animationName);
         if (animation == null) {

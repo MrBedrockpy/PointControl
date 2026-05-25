@@ -80,6 +80,10 @@ public class NetworkManager {
         sendToPlayers(new UpdateDominatorPacket(pointId, team));
     }
 
+    public static void updateRadius(String pointId, double radius) {
+        sendToPlayers(new UpdateRadiusPacket(pointId, radius));
+    }
+
     public static void updateAssimilationDuration(String pointId, int assimilationDuration) {
         sendToPlayers(new UpdateAssimilationDurationPacket(pointId, assimilationDuration));
     }
