@@ -1,6 +1,5 @@
 package ru.mrbedrockpy.pointcontrol.config;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.*;

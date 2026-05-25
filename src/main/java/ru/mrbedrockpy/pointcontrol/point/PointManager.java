@@ -53,7 +53,7 @@ public class PointManager {
     private static void sendAllPointPackets(Point point) {
         NetworkManager.addPoint(point.getId(), point.getLevel(), point.getPosition(), point.getRadius());
         NetworkManager.updatePointAssimilation(point.getId(), point.getAssimilation());
-        NetworkManager.updateDominator(point.getId(), String.valueOf(point.getDominator()));
+        NetworkManager.updateDominator(point.getId(), point.getDominator().getName());
         NetworkManager.updateAssimilationDuration(point.getId(), point.getAssimilationDuration());
         NetworkManager.updatePointAnimation(point.getId(), point.getAssimilationAnimation());
     }
