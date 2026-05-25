@@ -60,7 +60,9 @@ public class Point {
     public void resetDominator() {
         this.dominator = null;
         this.owner = null;
+        this.assimilation = 0;
         NetworkManager.updateDominator(this.id, "null");
+        NetworkManager.updatePointAssimilation(this.id, this.assimilation);
         PointSavedData.get().setDirty();
     }
 

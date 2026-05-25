@@ -52,7 +52,11 @@ public class PointHud {
 
     public static void updateDominator(String point, String teamName) {
         ClientPoint p = points.get(point);
-        if (p != null) p.setDominator(getTeam(teamName));
+        if (p != null) {
+            Team team = getTeam(teamName);
+            if (team == null) p.setAssimilation(0);
+            p.setDominator(team);
+        }
     }
 
     private static Team getTeam(String teamName) {

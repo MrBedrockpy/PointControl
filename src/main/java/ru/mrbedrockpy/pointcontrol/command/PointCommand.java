@@ -4,6 +4,8 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,6 +18,7 @@ import ru.mrbedrockpy.pointcontrol.point.PointManager;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class PointCommand extends AbstractCommand {
 
@@ -27,32 +30,19 @@ public class PointCommand extends AbstractCommand {
                                 .then(Commands.argument("radius", DOUBLE_TYPE).executes(PointCommand::create))
                         ),
                 Commands.literal("remove")
-                        .then(Commands.argument("id", STR_TYPE)
-                                .suggests((context, builder) -> SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder))
-                                .executes(PointCommand::remove)
-                        ),
+                        .then(Commands.argument("id", STR_TYPE).suggests(PointCommand::suggestPoints).executes(PointCommand::remove)),
                 Commands.literal("list").executes(PointCommand::list),
                 Commands.literal("radius")
-                        .then(Commands.argument("id", STR_TYPE)
-                                .suggests((context, builder) -> SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder))
-                                .then(Commands.argument("radius", DOUBLE_TYPE)
-                                        .executes(PointCommand::radius)
-                                )
-                        ),
+                        .then(Commands.argument("id", STR_TYPE).suggests(PointCommand::suggestPoints)
+                                .then(Commands.argument("radius", DOUBLE_TYPE).executes(PointCommand::radius))),
                 Commands.literal("assimilation")
                         .then(Commands.literal("reset")
-                                .then(Commands.argument("id", STR_TYPE)
-                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder))
-                                        .executes(PointCommand::reset)
-                                )
+                                .then(Commands.argument("id", STR_TYPE).suggests(PointCommand::suggestPoints).executes(PointCommand::reset))
                                 .then(Commands.literal("all").executes(PointCommand::resetAll))
                         )
                         .then(Commands.literal("duration")
-                                .then(Commands.argument("id", STR_TYPE)
-                                        .suggests((context, builder) -> SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder))
-                                        .then(Commands.argument("duration", INT_TYPE)
-                                                .executes(PointCommand::assimilationDuration)
-                                        )
+                                .then(Commands.argument("id", STR_TYPE).suggests(PointCommand::suggestPoints)
+                                        .then(Commands.argument("duration", INT_TYPE).executes(PointCommand::assimilationDuration))
                                 )
                         )
                         .then(Commands.literal("animation")
@@ -70,7 +60,7 @@ public class PointCommand extends AbstractCommand {
 
     private static int create(CommandContext<CommandSourceStack> ctx) {
         String id = StringArgumentType.getString(ctx, "id");
-        int radius = IntegerArgumentType.getInteger(ctx, "radius");
+        double radius = DoubleArgumentType.getDouble(ctx, "radius");
         CommandSourceStack source = ctx.getSource();
         ServerPlayer player = source.getPlayer();
         if (player == null) {
@@ -84,8 +74,8 @@ public class PointCommand extends AbstractCommand {
             player.sendSystemMessage(Component.literal("Created point " + id + " with radius " + radius));
             return 1;
         }
-        player.sendSystemMessage(Component.literal("Point with name already exists!").withStyle(ChatFormatting.RED));
-        return 1;
+        player.sendSystemMessage(Component.literal("Point with id already exists!").withStyle(ChatFormatting.RED));
+        return 0;
     }
 
     private static int remove(CommandContext<CommandSourceStack> ctx) {
@@ -155,6 +145,10 @@ public class PointCommand extends AbstractCommand {
         point.setAssimilationAnimation(animation);
         ctx.getSource().sendSystemMessage(Component.literal("Assimilation duration been set!"));
         return 1;
+    }
+
+    private static CompletableFuture<Suggestions> suggestPoints(final CommandContext<CommandSourceStack> context, final SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(PointManager.getPoints().keySet(), builder);
     }
 
     @Override
