@@ -39,6 +39,12 @@ public class NetworkManager {
                 .consumerMainThread(UpdateAssimilationDurationPacket::handle)
                 .add();
 
+        CHANNEL.messageBuilder(UpdateRadiusPacket.class, id++)
+                .encoder(UpdateRadiusPacket::encode)
+                .decoder(UpdateRadiusPacket::new)
+                .consumerMainThread(UpdateRadiusPacket::handle)
+                .add();
+
         CHANNEL.messageBuilder(AddPointPacket.class, id++)
                 .encoder(AddPointPacket::encode)
                 .decoder(AddPointPacket::new)
