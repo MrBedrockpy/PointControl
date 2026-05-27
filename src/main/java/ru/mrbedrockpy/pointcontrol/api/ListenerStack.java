@@ -12,6 +12,10 @@ public class ListenerStack<E extends Event> {
     public void add(Listener<E> listener) {
         listeners.add(listener);
     }
+    public void remove(Listener<E> listener) {
+        listeners.remove(listener);
+    }
+
     public void call(E event) {
         listeners.forEach(l -> l.onEvent(event));
     }
