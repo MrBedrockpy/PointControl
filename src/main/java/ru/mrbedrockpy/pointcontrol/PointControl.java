@@ -48,6 +48,8 @@ public class PointControl {
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
         Config.load();
+
+        LOGGER.info("Capture points: {}", PointManager.getPoints().size());
     }
 
     @SubscribeEvent

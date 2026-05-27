@@ -210,6 +210,10 @@ public class Point {
         return isDraw ? null : dominator;
     }
 
+    public String getDominatorName() {
+        return dominator == null ? "null" : dominator.getName();
+    }
+
     public static Vec3 toVec3(Vector3f position) {
         return new Vec3(position.x, position.y, position.z);
     }

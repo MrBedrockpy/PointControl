@@ -22,8 +22,6 @@ public class PointSavedData extends SavedData {
 
     private static final String DATA_NAME = "pointcontrol";
 
-    private final Map<String, Point> points = new HashMap<>();
-
     public static PointSavedData get() {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         return server.overworld().getDataStorage().computeIfAbsent(PointSavedData::load, PointSavedData::new, DATA_NAME);
@@ -35,13 +33,12 @@ public class PointSavedData extends SavedData {
         for (int i = 0; i < list.size(); i++) {
             CompoundTag p = list.getCompound(i);
             String id = p.getString("id");
-            ResourceKey<Level> level = ResourceKey.create(Registries.DIMENSION, ResourceLocation
-                    .fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, p.getString("level")));
+            ResourceKey<Level> level = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(p.getString("level")));
             Vector3f pos = new Vector3f(p.getFloat("x"), p.getFloat("y"), p.getFloat("z"));
             Point point = new Point(id, level, pos, p.getInt("radius"));
             point.loadAssimilationDuration(p.getInt("assimilation-duration"));
             point.loadAssimilationAnimation(AssimilationAnimation.getByName(p.getString("assimilation-animation")));
-            data.points.put(id, point);
+            PointManager.getPoints().put(id, point);
         }
         return data;
     }
@@ -49,7 +46,7 @@ public class PointSavedData extends SavedData {
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag tag) {
         ListTag list = new ListTag();
-        for (Point point : points.values()) {
+        for (Point point : PointManager.getPoints().values()) {
             CompoundTag p = new CompoundTag();
             p.putString("id", point.getId());
             p.putString("level", point.getLevel().location().toString());
